@@ -2,6 +2,7 @@ import type { AppProps } from "next/app";
 import Web3Provider from "@/providers/Web3";
 import { SEO } from "@/components/layout";
 import { createTheme, NextUIProvider } from "@nextui-org/react";
+import { SuperfluidProvider } from "@/providers/SuperfluidProvider";
 
 const theme = createTheme({
   type: "light",
@@ -26,9 +27,11 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <NextUIProvider theme={theme}>
       <Web3Provider>
-        <SEO />
-        <AppBackground />
-        <Component {...pageProps} />
+        <SuperfluidProvider>
+          <SEO />
+          <AppBackground />
+          <Component {...pageProps} />
+        </SuperfluidProvider>
       </Web3Provider>
     </NextUIProvider>
   );
