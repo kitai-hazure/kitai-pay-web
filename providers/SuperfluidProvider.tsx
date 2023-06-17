@@ -12,6 +12,7 @@ interface SuperfluidContextType {
   getSentFlowsForUser: any;
   deleteFlow: Function;
   updateFlow: Function;
+  batchTransactions: Function;
 }
 
 const SuperfluidContext = createContext<SuperfluidContextType>({
@@ -22,6 +23,7 @@ const SuperfluidContext = createContext<SuperfluidContextType>({
   getSentFlowsForUser: () => {},
   deleteFlow: () => {},
   updateFlow: () => {},
+  batchTransactions: () => {},
 });
 
 export function useSuperfluid(): SuperfluidContextType {
@@ -196,6 +198,25 @@ export function SuperfluidProvider({
     if (!(superSigner && sf)) {
       throw new Error("Error initialzing SDK, couldnt find signer and token");
     }
+    if (!listOPs) {
+      console.log("EXECUTING SAMPLE TRANSACTIONS");
+      const approveOp = fdaix!.approve({
+        receiver: "0x302A9674E39A43B6d414410E5991ff9a89Cc6EeE",
+        amount: "10",
+      });
+      const transferFromOp = fdaix!.transferFrom({
+        sender: await superSigner.getAddress(),
+        receiver: "0x302A9674E39A43B6d414410E5991ff9a89Cc6EeE",
+        amount: "5",
+      });
+
+      const Ops = [approveOp, transferFromOp];
+      console.log("Calling....");
+      const batchCall = sf.batchCall(Ops);
+      const res = await batchCall.exec(superSigner);
+      console.log(res);
+      return;
+    }
     const batchCall = sf.batchCall(listOPs);
     const res = await batchCall.exec(superSigner);
     console.log(res);
@@ -211,6 +232,7 @@ export function SuperfluidProvider({
         getSentFlowsForUser,
         deleteFlow,
         updateFlow,
+        batchTransactions,
       }}
     >
       {children}

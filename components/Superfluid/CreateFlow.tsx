@@ -11,11 +11,7 @@ const CreateFlow = () => {
   const [flowRate, setFlowRate] = React.useState<number>(0);
   const [loading, setLoading] = React.useState<boolean>(true);
 
-  const handleChangeFlowRate = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("called");
-    setFlowRate(Number(event.target.value));
-  };
-
+  let Ops = [];
   const {
     sf,
     superSigner,
@@ -24,6 +20,7 @@ const CreateFlow = () => {
     getSentFlowsForUser,
     deleteFlow,
     updateFlow,
+    batchTransactions,
   } = useSuperfluid();
   React.useEffect(() => {
     if (sf && superSigner && fdaix) {
@@ -70,8 +67,13 @@ const CreateFlow = () => {
         <Button onClick={() => updateFlow(recipientAddress, flowRate)}>
           UpdateFlow
         </Button>
-        <Button onClick={() => deleteFlow(recipientAddress)}>
-          DeleteFlow
+        <Button onClick={() => deleteFlow(recipientAddress)}>DeleteFlow</Button>
+        <Button
+          onClick={() => {
+            batchTransactions();
+          }}
+        >
+          Test Batch Transaction
         </Button>
       </div>
     </div>
