@@ -14,6 +14,7 @@ interface SuperfluidContextType {
   deleteFlow: Function;
   updateFlow: Function;
   batchTransactions: Function;
+  flowsForCurrentUser: Function;
 }
 
 const SuperfluidContext = createContext<SuperfluidContextType>({
@@ -26,6 +27,7 @@ const SuperfluidContext = createContext<SuperfluidContextType>({
   deleteFlow: () => {},
   updateFlow: () => {},
   batchTransactions: () => {},
+  flowsForCurrentUser: () => {},
 });
 
 export function useSuperfluid(): SuperfluidContextType {
@@ -167,6 +169,39 @@ export function SuperfluidProvider({
   };
 
   //TODO: Add in getRecievingFlows For User - pls pls am lazy @KalashShah or @DhruvDave
+  const flowsForCurrentUser = async () => {
+    const data = await fetch(
+      //   "https://console.superfluid.finance/subgraph?_network=mumbai",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: `
+          query CurrentUserStreams {
+            streams(where: {receiver: "${superSignerAddress?.toLowerCase()}"}) {
+              id
+              currentFlowRate
+              sender {
+                id
+                sentTransferEvents{
+                  token
+                }
+              }
+            }
+          }
+      `,
+        }),
+        next: { revalidate: 10 },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => data);
+
+    console.log("Data fetched from API : ", data);
+  };
 
   const deleteFlow = async (receiverAddress: string, userData?: string) => {
     if (!(superSigner && fdaix)) {
@@ -242,6 +277,7 @@ export function SuperfluidProvider({
         deleteFlow,
         updateFlow,
         batchTransactions,
+        flowsForCurrentUser,
       }}
     >
       {children}

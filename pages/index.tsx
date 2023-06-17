@@ -1,19 +1,19 @@
-import Head from "next/head";
+import CreateFlow from "@/components/Superfluid/CreateFlow";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { SITE_NAME, SITE_DESCRIPTION } from "@/utils/config";
-import { Inter } from "next/font/google";
-
-const inter = Inter({ subsets: ["latin"] });
+import React from "react";
+import { useAccount } from "wagmi";
 
 export default function Home() {
-  return (
-    <main className={`${inter.className}`}>
-      <Head>
-        <title>{SITE_NAME}</title>
-        <meta name="description" content={SITE_DESCRIPTION} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
-      <ConnectButton />
-    </main>
+  const { isConnected } = useAccount();
+  const [connected, setIsConnected] = React.useState<boolean>(false);
+  React.useEffect(() => {
+    setIsConnected(isConnected);
+  }, [isConnected]);
+  return connected ? (
+    <div>
+      <CreateFlow />
+    </div>
+  ) : (
+    <ConnectButton />
   );
 }

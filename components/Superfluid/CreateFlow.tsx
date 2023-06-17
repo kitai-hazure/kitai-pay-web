@@ -21,6 +21,7 @@ const CreateFlow = () => {
     deleteFlow,
     updateFlow,
     batchTransactions,
+    flowsForCurrentUser,
   } = useSuperfluid();
   React.useEffect(() => {
     if (sf && superSigner && fdaix) {
@@ -28,6 +29,7 @@ const CreateFlow = () => {
       console.log(sf);
       console.log(superSigner);
       console.log(fdaix);
+      flowsForCurrentUser();
       setLoading(false);
     }
   }, [sf, superSigner, fdaix]);
