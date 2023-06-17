@@ -7,6 +7,7 @@ import { useAccount, useSigner } from "wagmi";
 interface SuperfluidContextType {
   sf: Framework | null;
   superSigner: ethers.Signer | null;
+  superSignerAddress: string | null;
   fdaix: SuperToken | null;
   createNewFlow: Function;
   getSentFlowsForUser: any;
@@ -18,6 +19,7 @@ interface SuperfluidContextType {
 const SuperfluidContext = createContext<SuperfluidContextType>({
   sf: null,
   superSigner: null,
+  superSignerAddress: null,
   fdaix: null,
   createNewFlow: () => {},
   getSentFlowsForUser: () => {},
@@ -38,6 +40,9 @@ export function SuperfluidProvider({
   const [sf, setSuperfluid] = useState<Framework | null>(null);
   const [superSigner, setSuperSigner] = useState<ethers.Signer | null>(null);
   const [fdaix, setFDAIX] = useState<SuperToken | null>(null);
+  const [superSignerAddress, setSuperSignerAddress] = useState<string | null>(
+    null
+  );
   const address = useAccount();
   const { data: signer } = useSigner();
   console.log(address);
@@ -58,6 +63,8 @@ export function SuperfluidProvider({
         signer: signer as Signer,
       });
 
+      const superSignerAddress = await superSignerInstance.getAddress();
+
       console.log("SUCCESSFUL");
       console.log("Signer Address:", await superSignerInstance.getAddress());
 
@@ -68,6 +75,7 @@ export function SuperfluidProvider({
       console.log("GOT fdaix");
 
       setSuperfluid(sfInstance);
+      setSuperSignerAddress(superSignerAddress);
       setSuperSigner(superSignerInstance);
       setFDAIX(fdaixInstance);
     }
@@ -227,6 +235,7 @@ export function SuperfluidProvider({
       value={{
         sf,
         superSigner,
+        superSignerAddress,
         fdaix,
         createNewFlow,
         getSentFlowsForUser,
