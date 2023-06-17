@@ -9,7 +9,9 @@ interface SuperfluidContextType {
   superSigner: ethers.Signer | null;
   fdaix: SuperToken | null;
   createNewFlow: Function;
-  getAllFlowsForUser: Function;
+  getSentFlowsForUser: any;
+  deleteFlow: Function;
+  updateFlow: Function;
 }
 
 const SuperfluidContext = createContext<SuperfluidContextType>({
@@ -17,7 +19,9 @@ const SuperfluidContext = createContext<SuperfluidContextType>({
   superSigner: null,
   fdaix: null,
   createNewFlow: () => {},
-  getAllFlowsForUser: () => {},
+  getSentFlowsForUser: () => {},
+  deleteFlow: () => {},
+  updateFlow: () => {},
 });
 
 export function useSuperfluid(): SuperfluidContextType {
@@ -109,8 +113,8 @@ export function SuperfluidProvider({
     }
   };
 
-  //Function to get all flows from graphQL
-  const getAllFlowsForUser = async () => {
+  //Function to get all flows from graphQL where user is sender!
+  const getSentFlowsForUser = async () => {
     if (!(sf && superSigner && fdaix)) {
       throw new Error("Error initializing SDK");
     }
@@ -147,16 +151,58 @@ export function SuperfluidProvider({
       }
     )
       .then((res) => res.json())
-      .then((data) => {
-        return data;
-      });
+      .then((data) => data);
 
     console.log("Data fetched from API : ", data);
   };
 
+  //TODO: Add in getRecievingFlows For User - pls pls am lazy @KalashShah or @DhruvDave
+
+  const deleteFlow = async (receiverAddress: string, userData?: string) => {
+    if (!(superSigner && fdaix)) {
+      throw new Error("Error initialzing SDK, couldnt find signer and token");
+    }
+
+    let flowOp = fdaix.deleteFlow({
+      sender: await superSigner.getAddress(),
+      receiver: receiverAddress,
+      userData: userData,
+    });
+    
+    const res = await flowOp.exec(superSigner);
+    console.log(res);
+  };
+
+  const updateFlow = async (
+    receiverAddress: string,
+    updatedFlowRate: string,
+    description?: string
+  ) => {
+    if (!(superSigner && fdaix)) {
+      throw new Error("Error initialzing SDK, couldnt find signer and token");
+    }
+    let flowOp = fdaix.updateFlow({
+      sender: await superSigner.getAddress(),
+      receiver: receiverAddress,
+      flowRate: updatedFlowRate,
+      userData: description,
+    });
+
+    const res = await flowOp.exec(superSigner);
+    console.log(res);
+  };
+
   return (
     <SuperfluidContext.Provider
-      value={{ sf, superSigner, fdaix, createNewFlow, getAllFlowsForUser }}
+      value={{
+        sf,
+        superSigner,
+        fdaix,
+        createNewFlow,
+        getSentFlowsForUser,
+        deleteFlow,
+        updateFlow,
+      }}
     >
       {children}
     </SuperfluidContext.Provider>

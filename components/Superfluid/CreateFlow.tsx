@@ -16,8 +16,15 @@ const CreateFlow = () => {
     setFlowRate(Number(event.target.value));
   };
 
-  const { sf, superSigner, fdaix, createNewFlow, getAllFlowsForUser } =
-    useSuperfluid();
+  const {
+    sf,
+    superSigner,
+    fdaix,
+    createNewFlow,
+    getSentFlowsForUser,
+    deleteFlow,
+    updateFlow,
+  } = useSuperfluid();
   React.useEffect(() => {
     if (sf && superSigner && fdaix) {
       // Access sf, superSigner, and fdaix here
@@ -59,7 +66,13 @@ const CreateFlow = () => {
         <Button onClick={() => createNewFlow(recipientAddress, flowRate)}>
           Let's create a stream
         </Button>
-        <Button onClick={() => getAllFlowsForUser()}>Get Flows</Button>
+        <Button onClick={() => getSentFlowsForUser()}>Get Sent Flows</Button>
+        <Button onClick={() => updateFlow(recipientAddress, flowRate)}>
+          UpdateFlow
+        </Button>
+        <Button onClick={() => deleteFlow(recipientAddress)}>
+          DeleteFlow
+        </Button>
       </div>
     </div>
   );
