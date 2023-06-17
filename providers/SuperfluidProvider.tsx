@@ -168,7 +168,7 @@ export function SuperfluidProvider({
       receiver: receiverAddress,
       userData: userData,
     });
-    
+
     const res = await flowOp.exec(superSigner);
     console.log(res);
   };
@@ -189,6 +189,15 @@ export function SuperfluidProvider({
     });
 
     const res = await flowOp.exec(superSigner);
+    console.log(res);
+  };
+
+  const batchTransactions = async (listOPs: any) => {
+    if (!(superSigner && sf)) {
+      throw new Error("Error initialzing SDK, couldnt find signer and token");
+    }
+    const batchCall = sf.batchCall(listOPs);
+    const res = await batchCall.exec(superSigner);
     console.log(res);
   };
 
