@@ -14,7 +14,7 @@ interface SuperfluidContextType {
   deleteFlow: Function;
   updateFlow: Function;
   batchTransactions: Function;
-  flowsForCurrentUser: Function;
+  flowsForCurrentUser: () => void;
 }
 
 const SuperfluidContext = createContext<SuperfluidContextType>({
@@ -100,7 +100,7 @@ export function SuperfluidProvider({
           sender: await superSigner.getAddress(),
           receiver: recipientAddress,
           flowRate: flowRate.toString(),
-          userData: description,
+          // userData: description,
           //   userData?: string - can add description as well
         });
 
