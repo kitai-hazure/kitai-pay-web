@@ -16,7 +16,7 @@ const AppBackground = () => {
         width: "100%",
         minHeight: "100vh",
         height: "100vh",
-        // backgroundColor: "#000",
+        backgroundColor: "#000",
         backgroundImage: "url(/gradient-right-dark.svg)",
       }}
     />

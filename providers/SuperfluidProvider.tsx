@@ -14,7 +14,8 @@ interface SuperfluidContextType {
   deleteFlow: Function;
   updateFlow: Function;
   batchTransactions: Function;
-  flowsForCurrentUser: () => void;
+  flowsForCurrentUser: Function;
+  initialized: boolean;
 }
 
 const SuperfluidContext = createContext<SuperfluidContextType>({
@@ -23,11 +24,12 @@ const SuperfluidContext = createContext<SuperfluidContextType>({
   superSignerAddress: null,
   fdaix: null,
   createNewFlow: () => {},
-  getSentFlowsForUser: () => {},
+  getSentFlowsForUser: () => Promise.resolve(),
   deleteFlow: () => {},
   updateFlow: () => {},
   batchTransactions: () => {},
   flowsForCurrentUser: () => {},
+  initialized: false,
 });
 
 export function useSuperfluid(): SuperfluidContextType {
@@ -47,6 +49,8 @@ export function SuperfluidProvider({
   );
   const address = useAccount();
   const { data: signer } = useSigner();
+  const [initialized, setInitialized] = useState<boolean>(false);
+
   console.log(address);
   useEffect(() => {
     async function initializeSuperfluid() {
@@ -80,6 +84,7 @@ export function SuperfluidProvider({
       setSuperSignerAddress(superSignerAddress);
       setSuperSigner(superSignerInstance);
       setFDAIX(fdaixInstance);
+      setInitialized(true);
     }
 
     if (address) {
@@ -165,7 +170,7 @@ export function SuperfluidProvider({
       .then((res) => res.json())
       .then((data) => data);
 
-    console.log("Data fetched from API : ", data);
+    return data;
   };
 
   //TODO: Add in getRecievingFlows For User - pls pls am lazy @KalashShah or @DhruvDave
@@ -200,7 +205,7 @@ export function SuperfluidProvider({
       .then((res) => res.json())
       .then((data) => data);
 
-    console.log("Data fetched from API : ", data);
+    return data;
   };
 
   const deleteFlow = async (receiverAddress: string, userData?: string) => {
@@ -278,6 +283,7 @@ export function SuperfluidProvider({
         updateFlow,
         batchTransactions,
         flowsForCurrentUser,
+        initialized,
       }}
     >
       {children}
