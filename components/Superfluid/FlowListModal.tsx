@@ -66,7 +66,11 @@ const FlowListModal = ({
   setFlows: React.Dispatch<React.SetStateAction<Flow[]>>;
 }) => {
   return (
-    <>
+    <div
+      style={{
+        margin: "1%",
+      }}
+    >
       <Button auto flat onPress={() => setVisible(true)}>
         {title}
       </Button>
@@ -95,7 +99,7 @@ const FlowListModal = ({
           </Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </div>
   );
 };
 

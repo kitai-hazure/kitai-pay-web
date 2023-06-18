@@ -7,6 +7,9 @@ import { IPaymentProps } from "@/types/payments/payment.types";
 import { useSuperfluid } from "@/providers/SuperfluidProvider";
 import { Flow } from "@/types/flow";
 import FlowListModal from "@/components/Superfluid/FlowListModal";
+import { Text } from "@nextui-org/react";
+import Lottie from "react-lottie";
+import asset from "../assets/69760-currency.json";
 
 export default function Home() {
   const {
@@ -121,35 +124,90 @@ export default function Home() {
   };
 
   return connected ? (
-    <div>
-      <Button onPress={handler}>Create Payment</Button>
-      <CreatePayment
-        visible={visible}
-        closeHandler={closeHandler}
-        createdPayments={createdPayments}
-        setCreatedPayments={setCreatedPayments}
-        handleFinalSave={handleFinalSavePayments}
-      />
-      <>
-        <FlowListModal
-          title="My Streams"
-          flows={outgoingFlows}
-          setVisible={setVisibleOutgoingFlows}
-          bindings={bindingsOutgoingFlows}
-          initialized={initialized}
-          incoming={false}
-          setFlows={setOutgoingFlows}
+    <div style={{ color: "red" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          margin: "15px",
+        }}
+      >
+        <div>
+          <h1 style={{ color: "purple" }}>Making</h1>
+          <h1 style={{ color: "orange" }}>Payments and Subscriptions</h1>
+          <h1 style={{ color: "purple" }}>Easier</h1>
+        </div>
+
+        <Lottie
+          options={{
+            animationData: asset,
+            autoplay: true,
+            loop: true,
+          }}
+          height="40%"
+          width="40%"
         />
-        <FlowListModal
-          title="Incoming Streams"
-          flows={incomingFlows}
-          setVisible={setVisibleIncomingFlows}
-          bindings={bindingsIncomingFlows}
-          initialized={initialized}
-          incoming={true}
-          setFlows={setIncomingFlows}
+        {/* <Text
+          h1
+          size={60}
+          css={{
+            textGradient: "45deg, $yellow600 -20%, $red600 100%",
+            color: "white",
+            
+          }}
+          weight="bold"
+        >
+          Some Random Text L
+        </Text> */}
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          paddingLeft: "30%",
+          paddingRight: "30%",
+        }}
+      >
+        <Button
+          auto
+          flat
+          onPress={handler}
+          style={{
+            margin: "1%",
+          }}
+        >
+          Create Payment
+        </Button>
+        <CreatePayment
+          visible={visible}
+          closeHandler={closeHandler}
+          createdPayments={createdPayments}
+          setCreatedPayments={setCreatedPayments}
+          handleFinalSave={handleFinalSavePayments}
         />
-      </>
+        <>
+          <FlowListModal
+            title="My Streams"
+            flows={outgoingFlows}
+            setVisible={setVisibleOutgoingFlows}
+            bindings={bindingsOutgoingFlows}
+            initialized={initialized}
+            incoming={false}
+            setFlows={setOutgoingFlows}
+          />
+          <FlowListModal
+            title="Incoming Streams"
+            flows={incomingFlows}
+            setVisible={setVisibleIncomingFlows}
+            bindings={bindingsIncomingFlows}
+            initialized={initialized}
+            incoming={true}
+            setFlows={setIncomingFlows}
+          />
+        </>
+      </div>
     </div>
   ) : (
     <ConnectButton />
