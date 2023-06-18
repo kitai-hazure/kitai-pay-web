@@ -11,7 +11,7 @@ interface SuperfluidContextType {
   fdaix: SuperToken | null;
   createNewFlow: Function;
   getSentFlowsForUser: any;
-  deleteFlow: Function;
+  deleteFlow: (receiverAddress: string, userData?: string) => Promise<void>;
   updateFlow: Function;
   batchTransactions: Function;
   flowsForCurrentUser: Function;
@@ -25,7 +25,7 @@ const SuperfluidContext = createContext<SuperfluidContextType>({
   fdaix: null,
   createNewFlow: () => {},
   getSentFlowsForUser: () => Promise.resolve(),
-  deleteFlow: () => {},
+  deleteFlow: () => Promise.resolve(),
   updateFlow: () => {},
   batchTransactions: () => {},
   flowsForCurrentUser: () => {},

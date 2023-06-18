@@ -9,7 +9,7 @@ interface ICreatePaymentProps {
   setCreatedPayments?: React.Dispatch<
     React.SetStateAction<IPaymentProps[] | null>
   >;
-  handleFinalSave?: any;
+  handleFinalSave?: (payment: IPaymentProps[]) => Promise<void>;
 }
 const CreatePayment = ({
   visible,
@@ -66,16 +66,18 @@ const CreatePayment = ({
     }
     // }
 
+    console.log("NEW PAYMENTS: ", newPayments);
     // console.log("CREATED PAYMENTS BEFORE CALL: ", createdPayments);
-    handleFinalSave?.(newPayments);
-    closeHandler();
+    handleFinalSave?.(newPayments).then(() => {
+      closeHandler();
+    });
   };
 
   return (
     <div>
       <Modal
         closeButton
-        aria-labelledby="Create Payments"
+        aria-label="Create Payments"
         open={visible}
         onClose={closeHandler}
         width="40%"
@@ -93,9 +95,14 @@ const CreatePayment = ({
             <div>
               {createdPayments.map((payment, index) => {
                 return (
-                  <Card style={{ marginBottom: "1rem" }}>
+                  <Card
+                    style={{ marginBottom: "1rem" }}
+                    aria-label="Payment Card"
+                    key={index}
+                  >
                     <Card.Body>
                       <Input
+                        aria-label="Receiver Wallet Address"
                         placeholder="Receiver Wallet Address"
                         defaultValue={
                           payment.receiver === "Please Enter Receiver Address"
@@ -106,6 +113,7 @@ const CreatePayment = ({
                       />
                       <Spacer y={1} />
                       <Input
+                        aria-label="Flow Rate (Wei per month)"
                         placeholder="Flow Rate (Wei per month)"
                         defaultValue={
                           payment.flow_rate === -1 ? "" : payment.flow_rate

@@ -1,7 +1,18 @@
+import { useSuperfluid } from "@/providers/SuperfluidProvider";
 import { Flow } from "@/types/flow";
 import { Button, Card, Loading, Modal, Text } from "@nextui-org/react";
 
-const FlowCard = ({ flow, incoming }: { flow: Flow; incoming: boolean }) => {
+const FlowCard = ({
+  flow,
+  incoming,
+  setFlows,
+}: {
+  flow: Flow;
+  incoming: boolean;
+  setFlows: React.Dispatch<React.SetStateAction<Flow[]>>;
+}) => {
+  const { deleteFlow } = useSuperfluid();
+
   return (
     <Card css={{ mw: "600px" }} key={flow.id}>
       <Card.Body>
@@ -16,7 +27,19 @@ const FlowCard = ({ flow, incoming }: { flow: Flow; incoming: boolean }) => {
           <Text style={{ marginLeft: "5px" }}>per month</Text>
         </div>
         {!incoming ? (
-          <Text>To: {flow.receiver}</Text>
+          <>
+            <Text css={{ marginBottom: 10 }}>To: {flow.receiver}</Text>
+            <Button
+              color="error"
+              onPress={() => {
+                deleteFlow(flow.receiver).then(() => {
+                  setFlows((prev) => prev.filter((f) => f.id !== flow.id));
+                });
+              }}
+            >
+              Delete
+            </Button>
+          </>
         ) : (
           <Text>From: {flow.sender}</Text>
         )}
@@ -32,6 +55,7 @@ const FlowListModal = ({
   initialized,
   title,
   incoming,
+  setFlows,
 }: {
   flows: Flow[];
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -39,6 +63,7 @@ const FlowListModal = ({
   initialized: boolean;
   title: string;
   incoming: boolean;
+  setFlows: React.Dispatch<React.SetStateAction<Flow[]>>;
 }) => {
   return (
     <>
@@ -59,11 +84,9 @@ const FlowListModal = ({
           </Text>
         </Modal.Header>
         <Modal.Body>
-          {(!initialized || flows.length === 0) && (
-            <Loading color="secondary" />
-          )}
+          {!initialized && <Loading color="secondary" />}
           {flows.map((flow) => (
-            <FlowCard key={flow.id} {...{ incoming, flow }} />
+            <FlowCard key={flow.id} {...{ incoming, flow, setFlows }} />
           ))}
         </Modal.Body>
         <Modal.Footer>

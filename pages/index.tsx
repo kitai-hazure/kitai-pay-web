@@ -1,14 +1,5 @@
-import CreateFlow from "@/components/Superfluid/CreateFlow";
 import CreatePayment from "@/components/create-payment";
-import {
-  Modal,
-  Button,
-  Text,
-  Input,
-  Row,
-  Checkbox,
-  useModal,
-} from "@nextui-org/react";
+import { Button, useModal } from "@nextui-org/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import React, { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
@@ -48,7 +39,7 @@ export default function Home() {
     (async () => {
       const res = await getSentFlowsForUser();
       setOutgoingFlows(() => {
-        return res.data.streams.map((stream: any) => {
+        let response = res.data.streams.map((stream: any) => {
           const split: Array<string> = stream.id.split("-");
           return {
             currentFlowRate: stream.currentFlowRate,
@@ -58,13 +49,17 @@ export default function Home() {
             token: split[2],
           };
         });
+        response = response.filter(
+          (flow: Flow) => flow.currentFlowRate !== "0"
+        );
+        return response;
       });
     })();
 
     (async () => {
       const res = await flowsForCurrentUser();
       setIncomingFlows(() => {
-        return res.data.streams.map((stream: any) => {
+        let response = res.data.streams.map((stream: any) => {
           const split: Array<string> = stream.id.split("-");
           return {
             currentFlowRate: stream.currentFlowRate,
@@ -74,6 +69,10 @@ export default function Home() {
             token: split[2],
           };
         });
+        response = response.filter(
+          (flow: Flow) => flow.currentFlowRate !== "0"
+        );
+        return response;
       });
     })();
   }, [initialized]);
@@ -139,6 +138,7 @@ export default function Home() {
           bindings={bindingsOutgoingFlows}
           initialized={initialized}
           incoming={false}
+          setFlows={setOutgoingFlows}
         />
         <FlowListModal
           title="Incoming Streams"
@@ -147,6 +147,7 @@ export default function Home() {
           bindings={bindingsIncomingFlows}
           initialized={initialized}
           incoming={true}
+          setFlows={setIncomingFlows}
         />
       </>
     </div>
