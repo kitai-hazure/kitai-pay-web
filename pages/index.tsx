@@ -1,11 +1,21 @@
 import CreateFlow from "@/components/Superfluid/CreateFlow";
 import CreatePayment from "@/components/create-payment";
-import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
+import {
+  Modal,
+  Button,
+  Text,
+  Input,
+  Row,
+  Checkbox,
+  useModal,
+} from "@nextui-org/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { IPaymentProps } from "@/types/payments/payment.types";
 import { useSuperfluid } from "@/providers/SuperfluidProvider";
+import { Flow } from "@/types/flow";
+import FlowListModal from "@/components/Superfluid/FlowListModal";
 
 export default function Home() {
   const {
@@ -19,7 +29,54 @@ export default function Home() {
     batchTransactions,
     flowsForCurrentUser,
     superSignerAddress,
+    initialized,
   } = useSuperfluid();
+
+  const {
+    setVisible: setVisibleIncomingFlows,
+    bindings: bindingsIncomingFlows,
+  } = useModal();
+  const {
+    setVisible: setVisibleOutgoingFlows,
+    bindings: bindingsOutgoingFlows,
+  } = useModal();
+  const [outgoingFlows, setOutgoingFlows] = useState<Flow[]>([]);
+  const [incomingFlows, setIncomingFlows] = useState<Flow[]>([]);
+
+  useEffect(() => {
+    if (!initialized) return;
+    (async () => {
+      const res = await getSentFlowsForUser();
+      setOutgoingFlows(() => {
+        return res.data.streams.map((stream: any) => {
+          const split: Array<string> = stream.id.split("-");
+          return {
+            currentFlowRate: stream.currentFlowRate,
+            id: stream.id,
+            sender: split[0],
+            receiver: split[1],
+            token: split[2],
+          };
+        });
+      });
+    })();
+
+    (async () => {
+      const res = await flowsForCurrentUser();
+      setIncomingFlows(() => {
+        return res.data.streams.map((stream: any) => {
+          const split: Array<string> = stream.id.split("-");
+          return {
+            currentFlowRate: stream.currentFlowRate,
+            id: stream.id,
+            sender: split[0],
+            receiver: split[1],
+            token: split[2],
+          };
+        });
+      });
+    })();
+  }, [initialized]);
 
   const { isConnected } = useAccount();
   const [connected, setIsConnected] = React.useState<boolean>(false);
@@ -67,7 +124,6 @@ export default function Home() {
   return connected ? (
     <div>
       <Button onPress={handler}>Create Payment</Button>
-      <Button onPress={getSentFlowsForUser}>View Flows</Button>
       <CreatePayment
         visible={visible}
         closeHandler={closeHandler}
@@ -75,6 +131,24 @@ export default function Home() {
         setCreatedPayments={setCreatedPayments}
         handleFinalSave={handleFinalSavePayments}
       />
+      <>
+        <FlowListModal
+          title="My Streams"
+          flows={outgoingFlows}
+          setVisible={setVisibleOutgoingFlows}
+          bindings={bindingsOutgoingFlows}
+          initialized={initialized}
+          incoming={false}
+        />
+        <FlowListModal
+          title="Incoming Streams"
+          flows={incomingFlows}
+          setVisible={setVisibleIncomingFlows}
+          bindings={bindingsIncomingFlows}
+          initialized={initialized}
+          incoming={true}
+        />
+      </>
     </div>
   ) : (
     <ConnectButton />
