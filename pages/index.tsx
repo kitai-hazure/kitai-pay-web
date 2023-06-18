@@ -123,7 +123,7 @@ export default function Home() {
     }
   };
 
-  return connected ? (
+  return (
     <div style={{ color: "red" }}>
       <div
         style={{
@@ -161,55 +161,63 @@ export default function Home() {
           Some Random Text L
         </Text> */}
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "center",
-          paddingLeft: "30%",
-          paddingRight: "30%",
-        }}
-      >
-        <Button
-          auto
-          flat
-          onPress={handler}
-          style={{
-            margin: "1%",
-          }}
-        >
-          Create Payment
-        </Button>
-        <CreatePayment
-          visible={visible}
-          closeHandler={closeHandler}
-          createdPayments={createdPayments}
-          setCreatedPayments={setCreatedPayments}
-          handleFinalSave={handleFinalSavePayments}
-        />
+      {connected ? (
         <>
-          <FlowListModal
-            title="My Streams"
-            flows={outgoingFlows}
-            setVisible={setVisibleOutgoingFlows}
-            bindings={bindingsOutgoingFlows}
-            initialized={initialized}
-            incoming={false}
-            setFlows={setOutgoingFlows}
-          />
-          <FlowListModal
-            title="Incoming Streams"
-            flows={incomingFlows}
-            setVisible={setVisibleIncomingFlows}
-            bindings={bindingsIncomingFlows}
-            initialized={initialized}
-            incoming={true}
-            setFlows={setIncomingFlows}
-          />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              paddingLeft: "30%",
+              paddingRight: "30%",
+            }}
+          >
+            <Button
+              auto
+              flat
+              onPress={handler}
+              style={{
+                margin: "1%",
+              }}
+            >
+              Create Payment
+            </Button>
+            <CreatePayment
+              visible={visible}
+              closeHandler={closeHandler}
+              createdPayments={createdPayments}
+              setCreatedPayments={setCreatedPayments}
+              handleFinalSave={handleFinalSavePayments}
+            />
+            <>
+              <FlowListModal
+                title="My Streams"
+                flows={outgoingFlows}
+                setVisible={setVisibleOutgoingFlows}
+                bindings={bindingsOutgoingFlows}
+                initialized={initialized}
+                incoming={false}
+                setFlows={setOutgoingFlows}
+              />
+              <FlowListModal
+                title="Incoming Streams"
+                flows={incomingFlows}
+                setVisible={setVisibleIncomingFlows}
+                bindings={bindingsIncomingFlows}
+                initialized={initialized}
+                incoming={true}
+                setFlows={setIncomingFlows}
+              />
+            </>
+          </div>
         </>
-      </div>
+      ) : (
+        <>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <ConnectButton />
+          </div>
+        </>
+      )}
     </div>
-  ) : (
-    <ConnectButton />
   );
 }
